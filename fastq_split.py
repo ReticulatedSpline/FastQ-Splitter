@@ -4,7 +4,7 @@
 def clean(string):
     return str(string).replace(" ", "").replace("'", "").replace("\\n", "\n").replace(",", "")
 
-with open("./rhodo.fastq", "r") as infile:
+with open("./input.fastq", "r") as infile:
     i = 0
     chunk = []
     print("Beginning processing...")
