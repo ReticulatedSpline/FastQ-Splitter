@@ -1,6 +1,6 @@
 # Creative Commons License - Ben Carpenter | 2018 | carpe504@d.umn.edu
 # Split fastQ files into respective forward and reverse files
-# requires a .fastq file in the same directory as code. Run with `python fastq_split.py`.
+# Run with `python fastq_split.py`.
 
 import os.path as path
 import sys
@@ -51,7 +51,7 @@ if consent.upper() == "Y":
             elif chunk[0][-2: -1] == "1":
                 print_progress(curline, linecount)
                 chunk.append(line)
-                with open(output_path + "forward.fastq", "a+") as forward:
+                with open(output_path + "/forward.fastq", "a+") as forward:
                     for cline in chunk:
                         forward.write(cline)
                 chunk = []
@@ -59,13 +59,13 @@ if consent.upper() == "Y":
             # Repeat for the reverse "2" direction
             elif str(chunk[0][-2: -1]) == "2":
                 chunk.append(line)
-                with open(output_path + "reverse.fastq", "a+") as reverse:
+                with open(output_path + "/reverse.fastq", "a+") as reverse:
                     for cline in chunk:
                         reverse.write(cline)
                 chunk = []
                 i = 0
     print_progress(curline, linecount)
-    print "\nDone! Results written to " + output_path.replace(" ", "\ ") + "."
+    print "\nDone! Wrote " + str(path.getsize(output_path + "/forward.fastq") / 1000000) + " MB (forward) and " + str(path.getsize(output_path + "/forward.fastq") / 1000000) + " MB (reverse) to: \n" + output_path.replace(" ", "\ ") + "/."
     sys.exit(0)
 else:
     print("Exiting...")
