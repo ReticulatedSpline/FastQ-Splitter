@@ -11,49 +11,45 @@ consent = "N"
 linecount = 0
 curline = 0
 
-def print_progress(current_count, total_count, stage):
-    hashes = 70.0 * (float(current_count) / float(total_count))
-    whitespace = 70 - hashes
-    # clear the command line
-    print("\033[H\033[J")
+def print_progress(current_count, total_count):
+    hashes = 50.0 * (float(current_count) / float(total_count))
+    whitespace = 50 - hashes
     # print the progress bar
-    print "\r" + stage
-    print ("\r[" + "#" * int(hashes) + " " * int(whitespace) + "]" )
+    sys.stdout.write("\r[" + "#" * int(hashes) + "-" * int(whitespace) + "] " + str(current_count) + "/" + str(total_count))
+    sys.stdout.flush()
 
-print("|-- Fastq splitter by Ben Jamin'. Press enter to use default values. --|")
+print("Press enter to use default values.")
 input_path = raw_input("Enter source fastq file name: ")
 if not input_path:
     input_path = path.realpath("./input.fastq")
-    print (input_path.replace(" ", "\ "))
+    print ("Defaulting to " + input_path + ".")
 
 output_path = raw_input("Enter destination folder: ")
 if not output_path:
     output_path = path.realpath("./")
-    print (output_path.replace(" ", "\ "))
+    print ("Defaulting to " + output_path + ".")
 
 consent = raw_input("Proceed? [Y/n] : ")
 
 if consent.upper() == "Y":
-    stage = "Counting lines..."
+    # Get a line count for the progres bar
     with open(input_path, "r") as file:
         for newline in file:
             linecount += 1
-        print("Lines: " + str(linecount))
-    
+    # Split lines into chunks and write to files
     with open(input_path, "r") as infile:
         i = 0
         chunk = []
 
         # Run through the file opened on line 7 line by line.
         for line in infile:
-            stage = "Splitting chunks..."
             curline += 1
             if i != 3:
                 chunk.append(line)
                 i += 1
             # Check the first line of the chunk, second to last character (last character is newline)
             elif chunk[0][-2: -1] == "1":
-                print_progress(curline, linecount, stage)
+                print_progress(curline, linecount)
                 chunk.append(line)
                 with open(output_path + "forward.fastq", "a+") as forward:
                     for cline in chunk:
@@ -68,10 +64,8 @@ if consent.upper() == "Y":
                         reverse.write(cline)
                 chunk = []
                 i = 0
-    # yay
-    stage = "Complete!"
-    print_progress(curline, linecount, stage)
-    print "Results written to " + output_path.replace(" ", "\ ")
+    print_progress(curline, linecount)
+    print "\nDone! Results written to " + output_path.replace(" ", "\ ") + "."
     sys.exit(0)
 else:
     print("Exiting...")
